@@ -1,10 +1,14 @@
-float g_RepulsionRange = 8.0f;
+float g_RepulsionRange = 10.0f;
 
-float g_NeighbourIdealProximity = 10.0f;
+float g_NeighbourIdealProximity = 5.0f;
 float g_NodeDiameter = 3.0f;
 float g_RepulsionSpringConstant = 0.03f;
 
-float g_ChanceToAddNewNode = 0.04f;
+float g_NodeVelocityDragFactor = 0.8f;
+
+float g_ChanceToAddNewNode = 0.2f;
+
+boolean g_SaveFrames = false;
 
 Curve g_Curve;
 CurveConstructor g_CurveConstructor;
@@ -96,7 +100,7 @@ void UpdateCurve()
   g_Curve.Update();
   g_Curve.Display();
   
-  if (frameCount % g_RenderFrameGap == 0)
+  if (frameCount % g_RenderFrameGap == 0 && g_SaveFrames)
   {
      saveFrame("render\\wrap_####.png"); 
   }

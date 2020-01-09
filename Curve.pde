@@ -19,15 +19,22 @@ class Curve
    
    void Update()
    {
-      float velDragFactor = 0.8f;
       for (Node node : m_Nodes)
       {
          PVector nodeVelocity = PVector.sub(node.m_Pos, node.m_PrevPos);
          node.m_PrevPos = node.m_Pos.copy();
-         node.m_Pos.add(PVector.mult(nodeVelocity, velDragFactor));
-      }
+         node.m_Pos.add(PVector.mult(nodeVelocity, g_NodeVelocityDragFactor));
+      }    
      
-     for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
+      for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
+      {
+        Node nodeA = m_Nodes.get(nodeIter);
+        Node nodeB = m_Nodes.get((nodeIter+1)%m_Nodes.size());
+        
+        ConstrainNodes(nodeA, nodeB, g_NeighbourIdealProximity);
+      } //<>// //<>// //<>//
+      
+      for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
      {
         Node node = m_Nodes.get(nodeIter);
         Node nodeLeft = m_Nodes.get((nodeIter == 0) ? m_Nodes.size()-1 : nodeIter-1);
@@ -49,14 +56,6 @@ class Curve
            }
         }
      }
-     
-      for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
-      {
-        Node nodeA = m_Nodes.get(nodeIter);
-        Node nodeB = m_Nodes.get((nodeIter+1)%m_Nodes.size());
-        
-        ConstrainNodes(nodeA, nodeB, g_NeighbourIdealProximity);
-      } //<>// //<>// //<>//
       
       if (IsLesserWithEpsilon(random(1.0), g_ChanceToAddNewNode))
       {

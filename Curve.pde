@@ -24,7 +24,30 @@ class Curve
          PVector nodeVelocity = PVector.sub(node.m_Pos, node.m_PrevPos);
          node.m_PrevPos = node.m_Pos.copy();
          node.m_Pos.add(PVector.mult(nodeVelocity, g_NodeVelocityDragFactor));
-      }    
+      }  
+      
+      for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
+       {
+          Node node = m_Nodes.get(nodeIter);
+          Node nodeLeft = m_Nodes.get((nodeIter == 0) ? m_Nodes.size()-1 : nodeIter-1);
+          Node nodeRight = m_Nodes.get((nodeIter+1)%m_Nodes.size());
+          for (Node otherNode : m_Nodes)
+          {
+             if (otherNode != node && otherNode != nodeLeft && otherNode != nodeRight)
+             {
+               float nodeDist = otherNode.m_Pos.dist(node.m_Pos);
+               if (IsLesserOrEqualWithEpsilon(nodeDist, g_RepulsionRange))
+               {
+                   PVector nodeDir = PVector.sub(otherNode.m_Pos, node.m_Pos);
+                   nodeDir.normalize();
+                   
+                   PVector repulsionForceForNode = PVector.mult(nodeDir, -(g_RepulsionRange - nodeDist)*g_RepulsionSpringConstant);
+                   otherNode.m_Pos.sub(repulsionForceForNode);
+                   node.m_Pos.add(repulsionForceForNode);
+               }
+             }
+          }
+       }
      
       for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
       {
@@ -33,29 +56,6 @@ class Curve
         
         ConstrainNodes(nodeA, nodeB, g_NeighbourIdealProximity);
       } //<>// //<>// //<>//
-      
-      for (int nodeIter = 0; nodeIter < m_Nodes.size(); ++nodeIter)
-     {
-        Node node = m_Nodes.get(nodeIter);
-        Node nodeLeft = m_Nodes.get((nodeIter == 0) ? m_Nodes.size()-1 : nodeIter-1);
-        Node nodeRight = m_Nodes.get((nodeIter+1)%m_Nodes.size());
-        for (Node otherNode : m_Nodes)
-        {
-           if (otherNode != node && otherNode != nodeLeft && otherNode != nodeRight)
-           {
-             float nodeDist = otherNode.m_Pos.dist(node.m_Pos);
-             if (IsLesserOrEqualWithEpsilon(nodeDist, g_RepulsionRange))
-             {
-                 PVector nodeDir = PVector.sub(otherNode.m_Pos, node.m_Pos);
-                 nodeDir.normalize();
-                 
-                 PVector repulsionForceForNode = PVector.mult(nodeDir, -(g_RepulsionRange - nodeDist)*g_RepulsionSpringConstant);
-                 otherNode.m_Pos.sub(repulsionForceForNode);
-                 node.m_Pos.add(repulsionForceForNode);
-             }
-           }
-        }
-     }
       
       if (IsLesserWithEpsilon(random(1.0), g_ChanceToAddNewNode))
       {

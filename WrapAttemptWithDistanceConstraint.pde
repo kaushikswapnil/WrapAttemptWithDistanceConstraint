@@ -1,6 +1,12 @@
-float g_RepulsionRange = 20.0f;
 
+float g_MaxRepulsionRange = 20.0f;
+float g_RepulsionRange = 20.0f;
+float g_MinRepulsionRange = 1.0f;
+
+float g_MaxNeighbourIdealProximity = 10.0f;
 float g_NeighbourIdealProximity = 10.0f;
+float g_MinNeighbourIdealProximity = 0.5f;
+
 float g_NodeDiameter = 3.0f;
 float g_RepulsionSpringConstant = 0.03f;
 
@@ -28,9 +34,12 @@ Button g_CPGButton;
 
 int g_RenderFrameGap = 30;
 
+boolean g_ReachedThresholdCount = false;
+int g_ThresholdNodeCount = 2000;
+
 void setup()
 {
-  size(1000, 1000);
+  size(500, 500);
   
   center = new PVector(width/2, height/2);
   
@@ -103,6 +112,26 @@ void UpdateCurve()
   if (frameCount % g_RenderFrameGap == 0 && g_SaveFrames)
   {
      saveFrame("render\\wrap_####.png"); 
+  }
+  
+  if (!g_ReachedThresholdCount)
+  {
+   g_RepulsionRange = min(max(g_MinRepulsionRange, map(g_Curve.m_Nodes.size(), 0, g_ThresholdNodeCount, g_MaxRepulsionRange, g_MinRepulsionRange)), g_MaxRepulsionRange);
+   g_NeighbourIdealProximity = min(max(g_MinNeighbourIdealProximity, map(g_Curve.m_Nodes.size(), 0, g_ThresholdNodeCount, g_MaxNeighbourIdealProximity, g_MinNeighbourIdealProximity)), g_MaxNeighbourIdealProximity);
+   
+   g_ReachedThresholdCount = g_Curve.m_Nodes.size() > g_ThresholdNodeCount;
+  }
+  else
+  {
+    if (g_Curve.m_Nodes.size() > 8)
+    {
+      g_Curve.m_Nodes.remove(0);
+      g_Curve.m_Nodes.remove(1);
+      g_Curve.m_Nodes.remove(2);
+      g_Curve.m_Nodes.remove(g_Curve.m_Nodes.size()-1);
+      g_Curve.m_Nodes.remove(g_Curve.m_Nodes.size()-1);
+      g_Curve.m_Nodes.remove(g_Curve.m_Nodes.size()-1);
+    }
   }
 }
 

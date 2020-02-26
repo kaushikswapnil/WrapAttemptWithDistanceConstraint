@@ -57,7 +57,7 @@ class Curve
         ConstrainNodes(nodeA, nodeB, g_NeighbourIdealProximity);
       } //<>// //<>// //<>//
       
-      if (IsLesserWithEpsilon(random(1.0), g_ChanceToAddNewNode))
+      if (IsLesserWithEpsilon(random(1.0), g_ChanceToAddNewNode) && !g_ReachedThresholdCount)
       {
         int recordNodeIter = -1;
         float recordAngle = 0.0f;
